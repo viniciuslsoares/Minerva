@@ -100,7 +100,7 @@ class _EfficientUnet(nn.Module):
         self.up2 = _Up(256, 24, 128, bilinear=False)     # (256, 32, 32) -> (128, 64, 64)
         self.up3 = _Up(128, 32, 64, bilinear=False)      # (128, 64, 64) -> (64, 128, 128)
         # self.up4 = _Up(64, 2, 32, bilinear=False)        # (64, 128, 128) -> (32, 256, 256)
-        self.up4 = Up_no_cat(64, 32, bilinear=False)
+        self.up4 = _Up_no_cat(64, 32, bilinear=False)
         
         
         # -- Output -- #
@@ -126,6 +126,10 @@ class _EfficientUnet(nn.Module):
         return logits
     
 class EfficientUnet(SimpleSupervisedModel):
+    
+    # O dado target deve ter o formto (Batch_size, H, W). 
+    # Se tiver um canal de cor não funciona.
+    # Por isso uso um transforms que faz um squeeze nessa dimensão
     
     def __init__(
         self, 
